@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, FlatList, Button, StyleSheet, ScrollView, TouchableOpacity, Alert } from 'react-native';
+import { View, Text, FlatList, Button, StyleSheet, ScrollView, TouchableOpacity, Alert, Image } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Col, Grid } from 'react-native-easy-grid';
 
@@ -8,7 +8,7 @@ const Trash = () => {
   const [notes, setNotes] = useState<any[]>([]);
 
   // Load trash and notes from AsyncStorage
-  useEffect(() => { 
+  useEffect(() => {
     const loadData = async () => {
       const storedTrash = await AsyncStorage.getItem('trash');
       const storedNotes = await AsyncStorage.getItem('notes');
@@ -46,7 +46,7 @@ const Trash = () => {
             const updatedTrash = trash.filter((_, i) => i !== index);
             await saveTrash(updatedTrash);
           },
-          
+
         },
         {
           text: 'Restore',
@@ -76,6 +76,9 @@ const Trash = () => {
               <View key={note.id || index} style={[styles.note, { backgroundColor: note.color }]}>
                 <TouchableOpacity style={{ gap: 7 }} onPress={() => handleNoteAction(index)} >
                   {note.title ? (<Text style={{ fontWeight: 'bold', color: '#000' }}>{note.title}</Text>) : ''}
+                  {note.image && (
+                    <Image source={{ uri: note.image }} style={styles.noteImage} />
+                  )}
                   <Text style={{ color: '#000' }}>{note.content}</Text>
                 </TouchableOpacity>
               </View>
@@ -86,7 +89,10 @@ const Trash = () => {
 
               <View key={note.id || index} style={[styles.note, { backgroundColor: note.color }]}>
                 <TouchableOpacity onPress={() => handleNoteAction(index)}>
-                  <Text style={{ fontWeight: 'bold', color: '#000' }}>{note.title}</Text>
+                  {note.title ? (<Text style={{ fontWeight: 'bold', color: '#000' }}>{note.title}</Text>) : ''}
+                  {note.image && (
+                    <Image source={{ uri: note.image }} style={styles.noteImage} />
+                  )}
                   <Text style={{ color: '#000' }}>{note.content}</Text>
                 </TouchableOpacity>
               </View>
@@ -119,6 +125,34 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: 'rgba(0, 0, 0, 0.16)',
 
+  },
+
+  noteImage: {
+    width: '100%',
+    height: 100,
+    borderRadius: 8,
+    marginBottom: 8,
+  },
+  imageContainer: {
+    position: 'relative',
+    marginHorizontal: 10,
+    marginBottom: 10,
+  },
+  image: {
+    width: '100%',
+    height: 200,
+    borderRadius: 8,
+  },
+  removeImageButton: {
+    position: 'absolute',
+    top: 5,
+    right: 5,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    borderRadius: 15,
+    width: 30,
+    height: 30,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });
 
